@@ -4,5 +4,5 @@ require('./generated?type=magic');
 const getMessage = require('package1/src/getMessage.js');
 import getMessageEsm from 'package1/src/getMessageEsm.js';
 
-console.warn(getMessage.default());
+console.warn(getMessage());
 console.warn(getMessageEsm());

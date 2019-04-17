@@ -11,9 +11,12 @@ const WebpackDevServer = require('webpack-dev-server');
 const contextPath = process.cwd();
 
 const DISABLE_CACHE = process.argv.includes('--disable-cache') || process.env.DISABLE_CACHE;
+const WITH_DEPENDENCY_LOADER = process.argv.includes('--with-dependency-loader') || process.env.WITH_DEPENDENCY_LOADER;
 const MUTATION_DELAY = 2000;
-console.warn('Cache:', DISABLE_CACHE ? 'disabled' : 'enabled');
 
+console.warn('Cache            :', DISABLE_CACHE ? 'disabled' : 'enabled');
+console.warn('Dependency plugin:', !WITH_DEPENDENCY_LOADER ? 'disabled' : 'enabled');
+console.warn('Mutation delay   :', MUTATION_DELAY);
 
 const webpackConfig = {
 	context: contextPath,
@@ -25,7 +28,7 @@ const webpackConfig = {
 		path: path.resolve(contextPath, 'dist')
 	},
 	module: {
-		rules: [
+		rules: !WITH_DEPENDENCY_LOADER ? [] : [
 			{
 				test: [path.resolve(__dirname, 'src', 'generated')],
 				use: [{
@@ -99,7 +102,7 @@ async function checkBuild (modules, shouldBeFromOverride) {
 	assert.strictEqual(getMessageEsmModules.length, 1);
 	const getMessagesEsmIsFromOverride = getMessageEsmModules[0].source.includes(' OVERRIDE ');
 	const getMessagesEsmColor = getMessagesEsmIsFromOverride === shouldBeFromOverride ? '\x1b[32m' : '\x1b[31m';
-	console.warn(`${getMessagesEsmColor}    getMessages was ${getMessagesEsmIsFromOverride ? '' : 'not '}overridden\x1b[0m`);
+	console.warn(`${getMessagesEsmColor}    getMessagesEsm was ${getMessagesEsmIsFromOverride ? '' : 'not '}overridden\x1b[0m`);
 }
 
 async function mutation_removeOverridePackage () {
@@ -115,7 +118,8 @@ async function mutation_removeOverridePackage () {
 		const modules = server._stats.toJson({ all: true }).modules;
 		checkBuild(modules, false);
 
-		console.warn('\n\nAll done. Two recompiles should have been triggered. But were they?');
+		console.warn('\n\nAll done. Two recompiles should have been triggered. But were they? Is everything \x1b[32mgreen\x1b[0m?');
+		server.close();
 	}, MUTATION_DELAY);
 }
 

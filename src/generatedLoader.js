@@ -14,11 +14,6 @@ module.exports = async function dependencyOrderLoader (_input, inputMap) {
 	// We could add specific dependencies, but the actual code also globs wildcard files,
 	// which we cannot add as a future dependency.
 	this.addContextDependency(this.rootContext);
-	// Effect:
-	// this.addContextDependency(path.join(this.rootContext, 'base-packages'));
-	// this.addContextDependency(path.join(this.rootContext, 'override-packages'));
-
-	// console.log('BUILDING GENERATED', type);
 
 	let code;
 	switch (type) {
